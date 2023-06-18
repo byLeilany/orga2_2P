@@ -1,0 +1,111 @@
+Lógica		    Lineal       Física      Acción
+0x0060:0x00123001 | 0x00123011 | 0x01123001 | Leer código
+0x0060:0x88A94100 | 0x88A94110 | 0x00000110 | Ejecutar código
+0x0030:0x00000000 | 0xF0000000 | 0x00000000 | Leer Datos
+0x0030:0x00399FFF | 0xF0399FFF | 0x00000FFF | Escribir Datos
+
+Selector 0x0030 -> indice  6
+Selector 0x0060 -> indice  12
+
+para cada selector debo definir un descriptor de segmento:
+descriptor6:
+	L: 	0
+	AVL: 	0
+	base: 	0x0000_0010
+	D/B:	1?
+	DPL:	0
+	G:	1
+	Limit: 	0x88A94
+	P: 	1
+	S: 	1
+	TYPE:	0b1010 / execute and read
+
+descriptor12:
+	L: 	0
+	AVL: 	0
+	base: 	0xF000_0000
+	D/B:	1?
+	DPL:	0
+	G:	1
+	Limit: 	0x0039A
+	P: 	1
+	S:	1
+	TYPE:	0b0010 / read and write
+
+hay un solo directorio, y su base la tengo cr3
+
+------------------------------------------------------
+0x00123011
+1) pd index: 0x000
+   pt index: 0x123
+   page off: 0x011
+0x88A94110
+2) pd index: 0x222
+   pt index: 0x294
+   page off: 0x110
+0xF0000000
+3) pd index: 0x3C0
+   pt index: 0x000
+   page off: 0x000
+0xF0399FFF
+4) pd index: 0x3C0
+   pt index: 0x399
+   page off: 0xFFF
+
+Tengo que hacer una PDE por cada pd_index distintas entre si. 
+En total hago 3 PDE.
+
+PDE1:
+	address: 0xF0000
+	A:	0
+	PCD:	0	
+	PWT:	0
+	U/S:	0 (kernel)
+	R/W:	0 (read)
+	
+PDE2:
+	address:0xF0000
+	A:
+	PCD:
+	PWT:
+	U/S:
+	R/W:
+	
+PDE3 (la compartida por 3 y 4):
+	address:
+	A:
+	PCD:
+	PWT:
+	U/S:
+	R/W:
+
+-------------------------------------------------------
+
+fisica: 0x01123001
+
+page off: 0x011 lineal != 001
+PTE1:
+	address: 0x01123
+	A:	0
+	PCD:	0	
+	PWT:	0
+	U/S:	0 (kernel)
+	R/W:	0 (read)
+	
+fisica: 0x00000110
+PTE2:
+	address:0x00000
+	A:
+	PCD:
+	PWT:
+	U/S:
+	R/W:
+	
+PTE3 (la compartida por 3 y 4):
+	address:
+	A:
+	PCD:
+	PWT:
+	U/S:
+	R/W:
+

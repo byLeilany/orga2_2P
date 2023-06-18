@@ -112,9 +112,14 @@ uint32_t forzar_ejecucion(uint32_t virt, uint32_t phy, uint16_t task_sel)
         
 	// Obtengo el indice en la GDT de la TSS para el selector de segmento de la tarea que me pasan por parametro
 	uint_16 index_task_param = task_sel > 3  /* task_sel = [INDEX (13 bits) | TI (1 bit) | RPL (2 bit)] */
-	uint_32 tss_address = (gdt[index_task_param].base_31_24 < 24) | (gdt[index_task_param].base_23_16 < 16) | (gdt[index_task_param].base_15_0);
+	
+	uint_32 tss_address = (gdt[index_task_param].base_31_24 < 24) | 
+			      (gdt[index_task_param].base_23_16 < 16) | 
+			      (gdt[index_task_param].base_15_0);
+			      
 	tss* tss_param_task = (tss*)tss_address;
-    	uint_32 cr3_param_task = tss->cr3; 		/* CR3 de la tarea que me pasan por parametro */
+	
+    	uint_32 cr3_param_task = tss_param_task->cr3; 		/* CR3 de la tarea que me pasan por parametro */
 
 	// De su taller pueden usar: mmu_mapear_pagina(uint32_t cr3, uint32_t virtual, uint32_t fisica, uint32_t attrs) 
 	mmu_mapear_pagina(cr3_running_task, virt, phy, MMU_U | MMU_R | MMU_P);  	/* nivel usuario, lectura y que este presente */
@@ -153,7 +158,7 @@ uint32_t forzar_ejecucion(uint32_t virt, uint32_t phy, uint16_t task_sel)
 	uint32_t* esp_task_param =  (uint32_t*)(tss_param_task->esp);  			/* obtiene esp de nivel 0 */ 
 	tss_param_task->esp      = esp_task_param[11] & (0xFFFFF000);   		/* reinicia la pila de nivel 3. Mirar EJEMPLO al final */
 	tss_param_task->esp 	+= 0x1000;
-	tss_param_task->ss       = GDT_IDX_DS_RING_3; 							/* selector de segmento de pila tiene que ser de datos nivel 3*/
+	tss_param_task->ss       = GDT_IDX_DS_RING_3; 				        /* selector de segmento de pila tiene que ser de datos nivel 3*/
 	
 	/* Las dos siguiente lineas podria no haberse hecho, porque son campos estaticos en la TSS 
 	   Esto quiere decir, que una vez que fueron seteados, el procesador ya no puede modificarlos y
