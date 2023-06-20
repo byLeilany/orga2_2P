@@ -12,7 +12,7 @@ descriptor6:
 	L: 	0
 	AVL: 	0
 	base: 	0x0000_0010
-	D/B:	1?
+	D/B:	1
 	DPL:	0
 	G:	1
 	Limit: 	0x88A94
@@ -24,7 +24,7 @@ descriptor12:
 	L: 	0
 	AVL: 	0
 	base: 	0xF000_0000
-	D/B:	1?
+	D/B:	1
 	DPL:	0
 	G:	1
 	Limit: 	0x0039A
